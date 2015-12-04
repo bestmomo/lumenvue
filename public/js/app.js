@@ -44,7 +44,7 @@ new Vue({
         this.paginate();
     },
     methods: {
-        paginate: function (direction) {
+        paginate: function(direction) {
             if (direction === 'previous') {
                 --this.pagination.page;
             }
@@ -57,9 +57,8 @@ new Vue({
                 console.log("Error:" + JSON.stringify(data));
            });
         },
-        login: function (e) {
-            e.preventDefault();
-            this.error.email = this.error.password = this.isAlert = false;
+        login: function() {
+            this.error.email = this.error.password = this.isAlert = '';
             this.$http.post('auth/login', this.loginData, function (data) {
                 if (data.result === 'success') {
                     this.isLogged = true;
@@ -87,8 +86,7 @@ new Vue({
                 console.log("Error:" + JSON.stringify(data));
             });
         },
-        create: function (e) {
-            e.preventDefault();
+        create: function() {
             this.error.createContent = null;
             this.resource.save(this.createData, function (data) {
                 this.createData.content = null;
@@ -99,26 +97,36 @@ new Vue({
                 this.error.createContent = data.content[0];
             });
         },
-        destroy: function (id) {
-            if (confirm("Really delete this dream ?")) {
-                this.resource.remove({id: id}, function () {
-                    this.paginate();
+        destroy: function(id) {
+            var self = this;
+            swal({
+              title: "Really delete this dream ?",
+              text: "You will not be able to recover this dream !",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Yes, delete it!",
+              closeOnConfirm: false              
+            },
+            function(){
+                self.resource.delete({id: id}, function (data) {
+                    swal("Deleted!", "Your dream has been deleted.", "success");
+                    self.paginate();
                 }).error(function (data) {
                     console.log("Error:" + JSON.stringify(data));
                 });
-            }
+            });
         },
-        edit: function (id, index) {
+        edit: function(id, index) {
             this.error.updateContent = null;
             this.temp.id = this.dreams[index].id;
             this.temp.index = index;
             this.updateData.content = this.dreams[index].content;
             $('#myModal').modal();            
         },
-        update: function(e) {
-            e.preventDefault();
+        update: function() {
             this.error.updateContent = null;
-            this.$http.put('dream/' + this.temp.id, this.updateData, function (data) {
+            this.resource.update({id: this.temp.id}, this.updateData, function (data) {
                 this.dreams[this.temp.index].content = this.updateData.content;
                 $('#myModal').modal('hide');
             }).error(function (data) {

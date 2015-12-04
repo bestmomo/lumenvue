@@ -13,6 +13,9 @@
         <!-- Bootstrap Core CSS -->
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 
+        <!-- Sweet Alert CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
+
         <!-- Custom CSS -->
         <link href="css/grayscale.css" rel="stylesheet">
 
@@ -72,7 +75,7 @@
                             <a class="page-scroll" href="#auth">Login</a>
                         </li>                        
                         <li v-show="isLogged">
-                            <a v-on="click: logout" href>Logout</a>
+                            <a @click="logout" href>Logout</a>
                         </li>
                     </ul>
                 </div>
@@ -104,20 +107,20 @@
                 <div class="col-lg-10 col-lg-offset-1">
                     <nav>
                         <ul class="pager">
-                            <li v-show="pagination.previous" class="previous "><a v-on="click: paginate('previous')" class="page-scroll" href="#dreams"><< Previous</a></li>
-                            <li v-show="pagination.next" class="next"><a v-on="click: paginate('next')" class="page-scroll" href="#dreams">Next >></a></li>                        </ul>
+                            <li v-show="pagination.previous" class="previous "><a @click="paginate('previous')" class="page-scroll" href="#dreams"><< Previous</a></li>
+                            <li v-show="pagination.next" class="next"><a @click="paginate('next')" class="page-scroll" href="#dreams">Next >></a></li>                        </ul>
                     </nav>
-                    <div v-repeat="dreams" class="cadre">
+                    <div v-for="dream in dreams" class="cadre">
                         <h2>
-                            Dream of {{ user.name }}
+                            Dream of {{ dream.user.name }}
                         </h2>
-                        <p>{{ content }}</p>                        
+                        <p>{{ dream.content }}</p>                        
                         <h2>
-                            <div v-if="is_owner">
-                                <a v-on="click: edit(id, $index)" href="#">
+                            <div v-if="dream.is_owner">
+                                <a @click="edit(dream.id, $index)" href="#">
                                     <span class="fa fa-fw fa-pencil"></span>
                                 </a>
-                                <a v-on="click: destroy(id)" href="#dreams">
+                                <a @click="destroy(dream.id)" href="#dreams">
                                     <span class="fa fa-fw fa-trash"></span>
                                 </a>
                             </div>
@@ -125,8 +128,8 @@
                     </div>
                     <nav>
                         <ul class="pager">
-                            <li v-show="pagination.previous" class="previous"><a v-on="click: paginate('previous')" class="page-scroll" href="#dreams"><< Previous</a></li>
-                            <li v-show="pagination.next" class="next"><a v-on="click: paginate('next')" class="page-scroll" href="#dreams">Next >></a></li>
+                            <li v-show="pagination.previous" class="previous"><a @click="paginate('previous')" class="page-scroll" href="#dreams"><< Previous</a></li>
+                            <li v-show="pagination.next" class="next"><a @click="paginate('next')" class="page-scroll" href="#dreams">Next >></a></li>
                         </ul>
                     </nav>
                 </div>
@@ -143,10 +146,10 @@
                     </div>
                     <div class="modal-body">
 
-                        <form v-on="submit: update" accept-charset="UTF-8" role="form">
+                        <form @submit.prevent="update" accept-charset="UTF-8" role="form">
                             <div class="row">
 
-                                <div class="form-group col-lg-12" v-class="has-error: error.updateContent">
+                                <div class="form-group col-lg-12" :class="{'has-error': error.updateContent}">
                                     <textarea rows="8" v-model="updateData.content" class="form-control" name="content" id="content" required></textarea>
                                     <small class="help-block">{{ error.updateContent }}</small>
                                 </div>
@@ -171,18 +174,18 @@
                     <div class="col-lg-8 col-lg-offset-2">
                         <div v-show="!isLogged" >
                             <h2 class="text-center">Login</h2>
-                            <form v-on="submit: login" accept-charset="UTF-8" role="form">
+                            <form @submit.prevent="login" accept-charset="UTF-8" role="form">
                                 <div v-show="isAlert" class="alert alert-danger" role="alert">
                                     These credentials do not match our records.
                                 </div>
                                 <div class="row">
 
-                                    <div class="form-group col-lg-6" v-class="has-error: error.email">
+                                    <div class="form-group col-lg-6" :class="{'has-error': error.email}">
                                         <input v-model="loginData.email" class="form-control" placeholder="email" name="email" type="email" id="email" required>
                                         <small class="help-block">{{ error.email }}</small>
                                     </div>
 
-                                    <div class="form-group col-lg-6" v-class="has-error: error.password">
+                                    <div class="form-group col-lg-6" :class="{'has-error': error.password}">
                                         <input v-model="loginData.password" class="form-control" placeholder="password" name="password" type="password" value="" id="password" required>
                                         <small class="help-block">{{ error.password }}</small>
                                     </div>
@@ -210,10 +213,10 @@
 
                         <div v-show="isLogged" >
                             <h2 class="text-center">Add a dream</h2>
-                            <form v-on="submit: create" accept-charset="UTF-8" role="form">
+                            <form @submit.prevent="create" accept-charset="UTF-8" role="form">
                                 <div class="row">
 
-                                    <div class="form-group col-lg-12" v-class="has-error: error.createContent">
+                                    <div class="form-group col-lg-12" :class="{'has-error': error.createContent}">
                                         <textarea rows="8" v-model="createData.content" class="form-control" placeholder="Your dream just there..." name="content" id="content" required></textarea>
                                         <small class="help-block">{{ error.createContent }}</small>
                                     </div>
@@ -238,9 +241,12 @@
         </footer>
 
         <!-- Vue.js JavaScript -->
-        <script src="http://cdn.jsdelivr.net/vue/0.12.8/vue.min.js"></script>
-        <script src="js/vue-resource.min.js"></script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.10/vue.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.1.17/vue-resource.min.js"></script> 
         <script src="js/app.js"></script> 
+
+        <!-- Sweet Alert Javascript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script> 
 
     </body>
 
